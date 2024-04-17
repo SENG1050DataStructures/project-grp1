@@ -24,17 +24,25 @@ struct Node* createExpense(char month,float expenses){
     Node->prev = NULL;
     return newExpense;
 }
-struct Node* InsertNewExpense(struct Node* expenses,struct Node** lastExpense,char* month,float expenese){
+struct Node* InsertNewExpense(struct Node* headExpenses,struct Node** lastExpense,char* month,float expenese){
     struct Node* newExpense = CreateExpense(month,expense);
-    if(expnse == NULL ){
-        *lastExpenses = newExpense;
-        return newExpnse;
+    if (headExpenses == NULL || strcmp(headExpenses->month, month) > 0) {
+        *lastExpense = newExpense;
+        return newExpense;
     }
-    newExpense->next = expenses;
-    Node->month = month;
-    Node->expenses = expense;
-    expenses->prev = newExpense;
-    return expenses;
+    struct Node* currentExpense = headExpenses;
+    while (currentExpense->next != NULL && strcmp(currentExpense->next->month, month) < 0) { 
+        currentExpense = currentExpense->next;
+    }
+    newExpense->next = currentExpense->next;
+    currentExpense->next = newExpense;
+    newExpense->prev = currentExpense;
+    if (newExpense->next != NULL) {
+        newExpense->next->prev = newExpense;
+    } else {
+        *lastExpense = newExpense;
+    }
+    return headExpenses;
 }
 struct Node* InsertAtEnd(struct Node* expenses,struct Node** lastExpense,char* month,float expenese){
     struct Node* newExpense = CreateExpense(month,expense);
