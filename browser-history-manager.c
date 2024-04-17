@@ -31,6 +31,8 @@ struct Node* InsertNewExpense(struct Node* expenses,struct Node** lastExpense,ch
         return newExpnse;
     }
     newExpense->next = expenses;
+    Node->month = month;
+    Node->expenses = expense;
     expenses->prev = newExpense;
     return expenses;
 }
