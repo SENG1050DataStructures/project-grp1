@@ -159,21 +159,25 @@ int main(void)
         {
             float expenses[3] = {};
             struct Node* toInsert = SearchDeletedNode(head);
+            char inputMonth[20];
+            bool vaildMonth = false;
+            printf("Enter a month: ");
+            fgets(inputMonth, sizeof(inputMonth), stdin);
+           
+        
             if (toInsert != NULL)
             {
 
                 for (int i = 0; i < 3; i++)
                 {
                     printf("For the month of %s\n", toInsert->month);
-                    printf("Enter the expense for %s: ", toInsert->categories[i].category);
+                    printf("Enter the expense for %s: ",categories[i]);
                     fgets(buf, sizeof buf, stdin);
                     expenses[i] = atof(buf);
                 }
-
-
                 for (int i = 0; i < 3; i++)
                 {
-                    toInsert->categories[i].expense = expenses[i];
+                    toInsert->expenses[i] = expenses[i];
                 }
 
                 toInsert->deleted = false;
