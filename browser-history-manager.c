@@ -159,12 +159,6 @@ int main(void)
         {
             float expenses[3] = {};
             struct Node* toInsert = SearchDeletedNode(head);
-            char inputMonth[20];
-            bool vaildMonth = false;
-            printf("Enter a month: ");
-            fgets(inputMonth, sizeof(inputMonth), stdin);
-           
-        
             if (toInsert != NULL)
             {
 
