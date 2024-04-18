@@ -47,25 +47,25 @@ float SearchMonthExpenses(struct Node* head, char* targetMonth)
     struct Node* current = head;
     bool monthFound = false;
     const char* categories[3] = { "Bills", "Food", "Entertainment" };
-        while (current != NULL)
+    while (current != NULL)
+    {
+        if (strcmp(current->month, targetMonth) == 0)
         {
-            if (strcmp(current->month, targetMonth) == 0)
+            monthFound = true;
+            printf("Expenses for %s:\n", targetMonth);
+            printf("Category\tExpense\n");
+            printf("------------------------\n");
+
+            for (int i = 0; i < 3; i++)
             {
-                monthFound = true;
-                printf("Expenses for %s:\n", targetMonth);
-                printf("Category\tExpense\n");
-                printf("------------------------\n");
-
-                for (int i = 0; i < 3; i++)
-                {
-                    printf("%s\t$%.2f\n", categories[i], current->expenses[i]);
-                }
-                printf("\n");
-
-                return current->expenses[0] + current->expenses[1] + current->expenses[2];;
+                printf("%s\t$%.2f\n", categories[i], current->expenses[i]);
             }
-            current = current->next;
+            printf("\n");
+
+            return current->expenses[0] + current->expenses[1] + current->expenses[2];;
         }
+        current = current->next;
+    }
 
     if (!monthFound)
     {
@@ -124,12 +124,12 @@ int main(void)
     const char* categories[3] = { "Bills", "Food", "Entertainment" };
     char months[12][20] = { "January", "February", "March", "April", "May", "June",
                            "July", "August", "September", "October", "November", "December" };
-    
+
     for (int i = 0; i < 12; i++)
     {
         head = InsertAtEnd(head, &lastExpense, months[i], expenses);
     }
-    
+
 
     enum menuItems choice = menuNothing;
     char buf[20] = {};
@@ -165,7 +165,7 @@ int main(void)
                 for (int i = 0; i < 3; i++)
                 {
                     printf("For the month of %s\n", toInsert->month);
-                    printf("Enter the expense for %s: ",categories[i]);
+                    printf("Enter the expense for %s: ", categories[i]);
                     fgets(buf, sizeof buf, stdin);
                     expenses[i] = atof(buf);
                 }
@@ -232,4 +232,4 @@ int main(void)
     } while (choice != menuQuit);
 
     return 0;
-}
+}   
