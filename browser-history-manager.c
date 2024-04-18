@@ -174,7 +174,8 @@ int main(void)
                         printf("Invalid input\n");
                         i--;
                     }
-                    if (buf[0] == 'b') {
+                    if (buf[0] == 'b')
+                    {
                         break;
                     }
                 }
@@ -196,7 +197,8 @@ int main(void)
             char month[20];
             printf("Enter the month to delete: ");
             fgets(month, sizeof month, stdin);
-            if (month[0] == 'b') {
+            if (month[0] == 'b')
+            {
                   break;
             }
             for (int i = 0; i < strlen(month); i++)
@@ -216,7 +218,8 @@ int main(void)
             char inputMonth[20];
             printf("Enter a month to search for: ");
             fgets(inputMonth, sizeof(inputMonth), stdin);
-            if (inputMonth[0] == 'b') {
+            if (inputMonth[0] == 'b') 
+            {
                 break;
             }
             for (int i = 0; i < strlen(inputMonth); i++)
