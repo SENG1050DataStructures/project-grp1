@@ -2,23 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#pragma warning(disable: 4996)
+struct CategoryExpense
+{
+    char category[20];
+    float expense;
+};
 
 struct Node
 {
     char month[20];
-    char category1[20];
-    float expenses1;
-    char category2[20];
-    float expenses2;
-    char category3[20];
-    float expenses3;
+    struct CategoryExpense categories[3];
     bool deleted;
     struct Node* next;
     struct Node* prev;
 };
 
-struct Node* CreateExpense(char* month, char* category1, float expenses1, char* category2, float expenses2, char* category3, float expenses3)
+
+struct Node* CreateExpense(char* month, const char* category1, float expenses1,const char* category2, float expenses2, const char* category3, float expenses3)
 {
     struct Node* newExpense = (struct Node*)malloc(sizeof(struct Node));
     if (newExpense == NULL)
@@ -26,19 +26,21 @@ struct Node* CreateExpense(char* month, char* category1, float expenses1, char* 
         printf("No Memory!");
         exit(EXIT_FAILURE);
     }
-    strcpy(newExpense->month, month);
-    strcpy(newExpense->category1, category1);
-    newExpense->expenses1 = expenses1;
-    strcpy(newExpense->category2, category2);
-    newExpense->expenses2 = expenses2;
-    strcpy(newExpense->category3, category3);
-    newExpense->expenses3 = expenses3;
+    strncpy_s(newExpense->month, month, sizeof(newExpense->month) - 1);
+    
+    strncpy_s(newExpense->categories[0].category, category1, sizeof(newExpense->categories[0].category) - 1);
+    newExpense->categories[0].expense = expenses1;
+    strncpy_s(newExpense->categories[1].category, category2, sizeof(newExpense->categories[1].category) - 1);
+    newExpense->categories[1].expense = expenses2;
+    strncpy_s(newExpense->categories[2].category, category3, sizeof(newExpense->categories[2].category) - 1);
+    newExpense->categories[2].expense = expenses3;
     newExpense->next = NULL;
     newExpense->prev = NULL;
     return newExpense;
 }
 
-struct Node* InsertAtEnd(struct Node* expenses, struct Node** lastExpense, char* month, char* category1, float expenses1, char* category2, float expenses2, char* category3, float expenses3)
+
+struct Node* InsertAtEnd(struct Node* expenses, struct Node** lastExpense, char* month, const char* category1, float expenses1, const char* category2, float expenses2, const char* category3, float expenses3)
 {
     struct Node* newExpense = CreateExpense(month, category1, expenses1, category2, expenses2, category3, expenses3);
     if (*lastExpense == NULL)
@@ -51,6 +53,7 @@ struct Node* InsertAtEnd(struct Node* expenses, struct Node** lastExpense, char*
     *lastExpense = newExpense;
     return expenses;
 }
+
 
 float SearchMonthExpenses(struct Node* head, char* targetMonth)
 {
@@ -65,11 +68,14 @@ float SearchMonthExpenses(struct Node* head, char* targetMonth)
             printf("Expenses for %s:\n", targetMonth);
             printf("Category\tExpense\n");
             printf("------------------------\n");
-            printf("%s\t$%.2f\n", current->category1, current->expenses1);
-            printf("%s\t$%.2f\n", current->category2, current->expenses2);
-            printf("%s\t$%.2f\n", current->category3, current->expenses3);
+           
+            for (int i = 0; i < 3; i++)
+            {
+                printf("%s\t$%.2f\n", current->categories[i].category, current->categories[i].expense);
+            }
             printf("\n");
-            return current->expenses1 + current->expenses2 + current->expenses3;
+            
+            return current->categories[0].expense + current->categories[1].expense + current->categories[2].expense;
         }
         current = current->next;
     }
@@ -113,6 +119,7 @@ struct Node* SearchDeletedNode(struct Node* head)
     return NULL;
 }
 
+
 enum menuItems
 {
     menuNothing = 0,
@@ -130,12 +137,12 @@ int main(void)
     char months[12][20] = { "January", "February", "March", "April", "May", "June",
                            "July", "August", "September", "October", "November", "December" };
 
-    
     for (int i = 0; i < 12; i++)
     {
-        head = InsertAtEnd(head, &lastExpense, months[i], strdup("Bills"), 0, strdup("Food"), 0, strdup("Entertainment"), 0);
+        head = InsertAtEnd(head, &lastExpense, months[i], "Bills", 0, "Food", 0, "Entertainment", 0);
     }
-    menuItems choice = menuNothing;
+
+    enum menuItems choice = menuNothing;
     char buf[20] = { 0 };
 
     do
@@ -147,9 +154,9 @@ int main(void)
         printf("To exit program press 4\n");
 
         fgets(buf, sizeof buf, stdin);
-        for (int i = 0; i < sizeof buf; i++)
+        for (int i = 0; i < strlen(buf); i++)
         {
-            if (buf[i] == '\n') 
+            if (buf[i] == '\n')
             {
                 buf[i] = '\0';
                 break;
@@ -162,30 +169,25 @@ int main(void)
         {
         case insertElement:
         {
-            float expense1, expense2, expense3;
+            float expenses[3] = {}; 
             struct Node* toInsert = SearchDeletedNode(head);
 
             if (toInsert != NULL)
             {
-
-                printf("Enter the expense for %s: ", toInsert->category1);
-                fgets(buf, sizeof buf, stdin);
-                expense1 = atof(buf);
-
-
-                printf("Enter the expense for %s: ", toInsert->category2);
-                fgets(buf, sizeof buf, stdin);
-                expense2 = atof(buf);
+                
+                for (int i = 0; i < 3; i++)
+                {
+                    printf("Enter the expense for %s: ", toInsert->categories[i].category);
+                    fgets(buf, sizeof buf, stdin);
+                    expenses[i] = atof(buf);
+                }
 
                 
+                for (int i = 0; i < 3; i++)
+                {
+                    toInsert->categories[i].expense = expenses[i];
+                }
 
-                printf("Enter the expense for %s: ", toInsert->category3);
-                fgets(buf, sizeof buf, stdin);
-                expense3 = atof(buf);
-
-                toInsert->expenses1 = expense1;
-                toInsert->expenses2 = expense2;
-                toInsert->expenses3 = expense3;
                 toInsert->deleted = false;
             }
             else
@@ -200,9 +202,10 @@ int main(void)
             printf("Enter the month to delete: ");
             fgets(month, sizeof month, stdin);
 
-            for (int i = 0; i < sizeof month; i++)
+            for (int i = 0; i < strlen(month); i++)
             {
-                if (month[i] == '\n') {
+                if (month[i] == '\n')
+                {
                     month[i] = '\0';
                     break;
                 }
@@ -217,9 +220,10 @@ int main(void)
             printf("Enter a month to search for: ");
             fgets(inputMonth, sizeof inputMonth, stdin);
 
-            for (int i = 0; i < sizeof inputMonth; i++)
+            for (int i = 0; i < strlen(inputMonth); i++)
             {
-                if (inputMonth[i] == '\n') {
+                if (inputMonth[i] == '\n')
+                {
                     inputMonth[i] = '\0';
                     break;
                 }
@@ -238,12 +242,8 @@ int main(void)
             printf("Please input a valid key.\n");
         }
         }
-        
+
     } while (choice != menuQuit);
-
-    return 0;
-}
-
 
     return 0;
 }
