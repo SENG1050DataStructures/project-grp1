@@ -177,6 +177,7 @@ int main(void)
                 
                 for (int i = 0; i < 3; i++)
                 {
+                    printf("For the month of %s\n", toInsert->month);
                     printf("Enter the expense for %s: ", toInsert->categories[i].category);
                     fgets(buf, sizeof buf, stdin);
                     expenses[i] = atof(buf);
