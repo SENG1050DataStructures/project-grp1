@@ -141,6 +141,7 @@ int main(void)
         printf("To delete pre-existing element press 2\n");
         printf("To search for already existing element press 3\n");
         printf("To exit program press 4\n");
+        printf("Type b to go back when in any of the options\n");
 
         fgets(buf, sizeof buf, stdin);
         for (int i = 0; i < sizeof(buf); i++)
@@ -168,6 +169,14 @@ int main(void)
                     printf("Enter the expense for %s: ", categories[i]);
                     fgets(buf, sizeof buf, stdin);
                     expenses[i] = atof(buf);
+                    if (sscanf_s(buf, "%f", &expenses[i]) != 1 || expenses[i] < 0.0)
+                    {
+                        printf("Invalid input\n");
+                        i--;
+                    }
+                    if (buf[0] == 'b') {
+                        break;
+                    }
                 }
                 for (int i = 0; i < 3; i++)
                 {
@@ -187,7 +196,9 @@ int main(void)
             char month[20];
             printf("Enter the month to delete: ");
             fgets(month, sizeof month, stdin);
-
+            if (month[0] == 'b') {
+                  break;
+            }
             for (int i = 0; i < strlen(month); i++)
             {
                 if (month[i] == '\n')
@@ -205,7 +216,9 @@ int main(void)
             char inputMonth[20];
             printf("Enter a month to search for: ");
             fgets(inputMonth, sizeof(inputMonth), stdin);
-
+            if (inputMonth[0] == 'b') {
+                break;
+            }
             for (int i = 0; i < strlen(inputMonth); i++)
             {
                 if (inputMonth[i] == '\n')
@@ -232,4 +245,4 @@ int main(void)
     } while (choice != menuQuit);
 
     return 0;
-}   
+}
