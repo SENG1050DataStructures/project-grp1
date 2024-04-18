@@ -2,23 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct CategoryExpense
-{
-    char category[20];
-    float expense;
-};
-
 struct Node
 {
     char month[20];
-    struct CategoryExpense categories[3];
+    float expenses[3];
     bool deleted;
     struct Node* next;
     struct Node* prev;
 };
 
 
-struct Node* CreateExpense(char* month, const char* category1, float expenses1,const char* category2, float expenses2, const char* category3, float expenses3)
+struct Node* CreateExpense(char* month, float expenses[3])
 {
     struct Node* newExpense = (struct Node*)malloc(sizeof(struct Node));
     if (newExpense == NULL)
@@ -27,22 +21,15 @@ struct Node* CreateExpense(char* month, const char* category1, float expenses1,c
         exit(EXIT_FAILURE);
     }
     strncpy_s(newExpense->month, month, sizeof(newExpense->month) - 1);
-    
-    strncpy_s(newExpense->categories[0].category, category1, sizeof(newExpense->categories[0].category) - 1);
-    newExpense->categories[0].expense = expenses1;
-    strncpy_s(newExpense->categories[1].category, category2, sizeof(newExpense->categories[1].category) - 1);
-    newExpense->categories[1].expense = expenses2;
-    strncpy_s(newExpense->categories[2].category, category3, sizeof(newExpense->categories[2].category) - 1);
-    newExpense->categories[2].expense = expenses3;
     newExpense->next = NULL;
     newExpense->prev = NULL;
     return newExpense;
 }
 
 
-struct Node* InsertAtEnd(struct Node* expenses, struct Node** lastExpense, char* month, const char* category1, float expenses1, const char* category2, float expenses2, const char* category3, float expenses3)
+struct Node* InsertAtEnd(struct Node* expenses, struct Node** lastExpense, char* month, float expensesArray[3])
 {
-    struct Node* newExpense = CreateExpense(month, category1, expenses1, category2, expenses2, category3, expenses3);
+    struct Node* newExpense = CreateExpense(month, expensesArray);
     if (*lastExpense == NULL)
     {
         *lastExpense = newExpense;
@@ -59,26 +46,26 @@ float SearchMonthExpenses(struct Node* head, char* targetMonth)
 {
     struct Node* current = head;
     bool monthFound = false;
-
-    while (current != NULL)
-    {
-        if (strcmp(current->month, targetMonth) == 0)
+    const char* categories[3] = { "Bills", "Food", "Entertainment" };
+        while (current != NULL)
         {
-            monthFound = true;
-            printf("Expenses for %s:\n", targetMonth);
-            printf("Category\tExpense\n");
-            printf("------------------------\n");
-           
-            for (int i = 0; i < 3; i++)
+            if (strcmp(current->month, targetMonth) == 0)
             {
-                printf("%s\t$%.2f\n", current->categories[i].category, current->categories[i].expense);
+                monthFound = true;
+                printf("Expenses for %s:\n", targetMonth);
+                printf("Category\tExpense\n");
+                printf("------------------------\n");
+
+                for (int i = 0; i < 3; i++)
+                {
+                    printf("%s\t$%.2f\n", categories[i], current->expenses[i]);
+                }
+                printf("\n");
+
+                return current->expenses[0] + current->expenses[1] + current->expenses[2];;
             }
-            printf("\n");
-            
-            return current->categories[0].expense + current->categories[1].expense + current->categories[2].expense;
+            current = current->next;
         }
-        current = current->next;
-    }
 
     if (!monthFound)
     {
@@ -90,7 +77,7 @@ float SearchMonthExpenses(struct Node* head, char* targetMonth)
 void DeleteNode(struct Node* head, char* targetMonth)
 {
     struct Node* current = head;
-
+    float expenses[3] = {};
     while (current != NULL)
     {
         if (strcmp(current->month, targetMonth) == 0)
@@ -133,17 +120,19 @@ int main(void)
 {
     struct Node* head = NULL;
     struct Node* lastExpense = NULL;
-
+    float expenses[3] = {};
+    const char* categories[3] = { "Bills", "Food", "Entertainment" };
     char months[12][20] = { "January", "February", "March", "April", "May", "June",
                            "July", "August", "September", "October", "November", "December" };
-
+    
     for (int i = 0; i < 12; i++)
     {
-        head = InsertAtEnd(head, &lastExpense, months[i], "Bills", 0, "Food", 0, "Entertainment", 0);
+        head = InsertAtEnd(head, &lastExpense, months[i], expenses);
     }
+    
 
     enum menuItems choice = menuNothing;
-    char buf[20] = { 0 };
+    char buf[20] = {};
 
     do
     {
@@ -154,7 +143,7 @@ int main(void)
         printf("To exit program press 4\n");
 
         fgets(buf, sizeof buf, stdin);
-        for (int i = 0; i < strlen(buf); i++)
+        for (int i = 0; i < sizeof(buf); i++)
         {
             if (buf[i] == '\n')
             {
@@ -164,17 +153,15 @@ int main(void)
         }
 
         choice = (menuItems)atoi(buf);
-
         switch (choice)
         {
         case insertElement:
         {
-            float expenses[3] = {}; 
+            float expenses[3] = {};
             struct Node* toInsert = SearchDeletedNode(head);
-
             if (toInsert != NULL)
             {
-                
+
                 for (int i = 0; i < 3; i++)
                 {
                     printf("For the month of %s\n", toInsert->month);
@@ -183,7 +170,7 @@ int main(void)
                     expenses[i] = atof(buf);
                 }
 
-                
+
                 for (int i = 0; i < 3; i++)
                 {
                     toInsert->categories[i].expense = expenses[i];
@@ -219,7 +206,7 @@ int main(void)
         {
             char inputMonth[20];
             printf("Enter a month to search for: ");
-            fgets(inputMonth, sizeof inputMonth, stdin);
+            fgets(inputMonth, sizeof(inputMonth), stdin);
 
             for (int i = 0; i < strlen(inputMonth); i++)
             {
