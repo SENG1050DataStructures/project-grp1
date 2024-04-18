@@ -52,17 +52,17 @@ struct Node* InsertAtEnd(struct Node* expenses, struct Node** lastExpense, char*
     return expenses;
 }
 
-float SearchMonthExpenses(struct Node* head, char* target_month)
+float SearchMonthExpenses(struct Node* head, char* targetMonth)
 {
     struct Node* current = head;
     bool monthFound = false;
 
     while (current != NULL)
     {
-        if (strcmp(current->month, target_month) == 0)
+        if (strcmp(current->month, targetMonth) == 0)
         {
             monthFound = true;
-            printf("Expenses for %s:\n", target_month);
+            printf("Expenses for %s:\n", targetMonth);
             printf("Category\tExpense\n");
             printf("------------------------\n");
             printf("%s\t$%.2f\n", current->category1, current->expenses1);
@@ -76,26 +76,26 @@ float SearchMonthExpenses(struct Node* head, char* target_month)
 
     if (!monthFound)
     {
-        printf("Month of %s is not found.\n", target_month);
+        printf("Month of %s is not found.\n", targetMonth);
         return -1;
     }
 }
 
-void DeleteNode(struct Node* head, char* target_month)
+void DeleteNode(struct Node* head, char* targetMonth)
 {
     struct Node* current = head;
 
     while (current != NULL)
     {
-        if (strcmp(current->month, target_month) == 0)
+        if (strcmp(current->month, targetMonth) == 0)
         {
             current->deleted = true;
-            printf("Expenses for %s have been deleted.\n", target_month);
+            printf("Expenses for %s have been deleted.\n", targetMonth);
             return;
         }
         current = current->next;
     }
-    printf("Month of %s is not found.\n", target_month);
+    printf("Month of %s is not found.\n", targetMonth);
 }
 
 struct Node* SearchDeletedNode(struct Node* head)
